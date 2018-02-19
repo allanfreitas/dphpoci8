@@ -16,6 +16,7 @@ RUN apt-get update \
     libfreetype6-dev \
     libssl-dev \
     libmcrypt-dev \
+    libaio1 \
     unzip && rm -rf /var/lib/apt/lists/*
 
 #
@@ -27,36 +28,16 @@ RUN docker-php-ext-configure gd --enable-gd-native-ttf \
 #####################################
 # Install OCI8:
 #####################################
-ADD ./sharedlibs/instantclient-basic-linux.x64-12.2.0.1.0.zip /tmp/
-ADD ./sharedlibs/instantclient-sdk-linux.x64-12.2.0.1.0.zip /tmp/
-
-#RUN cd /tmp/ \
-#    && curl -LJO https://github.com/allanfreitas/dphpoci8/raw/master/sharedlibs/instantclient-basic-linux.x64-12.2.0.1.0.zip \
-#    && curl -LJO https://github.com/allanfreitas/dphpoci8/raw/master/sharedlibs/instantclient-sdk-linux.x64-12.2.0.1.0.zip \
-#    && unzip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /usr/local/ \
-#    && unzip /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /usr/local/ \
-#    && rm -Rf /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip \
-#    && rm -Rf /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip \
-#    && ln -s /usr/local/instantclient_12_2 /usr/local/instantclient \
-#    && ln -s /usr/local/instantclient/libclntsh.so.12.1 /usr/local/instantclient/libclntsh.so \
-#    && ln -s /usr/local/instantclient/libocci.so.12.1 /usr/local/instantclient/libocci.so
-
-RUN unzip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /usr/local/ \
+RUN cd /tmp/ \
+    && curl -LJO https://github.com/allanfreitas/dphpoci8/raw/master/sharedlibs/instantclient-basic-linux.x64-12.2.0.1.0.zip \
+    && curl -LJO https://github.com/allanfreitas/dphpoci8/raw/master/sharedlibs/instantclient-sdk-linux.x64-12.2.0.1.0.zip \
+    && unzip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /usr/local/ \
     && unzip /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /usr/local/ \
+    && rm -Rf /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip \
+    && rm -Rf /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip \
     && ln -s /usr/local/instantclient_12_2 /usr/local/instantclient \
     && ln -s /usr/local/instantclient/libclntsh.so.12.1 /usr/local/instantclient/libclntsh.so \
     && ln -s /usr/local/instantclient/libocci.so.12.1 /usr/local/instantclient/libocci.so \
-    && rm -rf /tmp/instantclient*
-
-#RUN cd /usr/local/instantclient && ls -lah
-
-#RUN echo '----------------------------------------'
-
-#RUN ln -s /usr/local/instantclient/libclntsh.so.12.1 /usr/local/instantclient/libclntsh.so \
-#    && ln -s /usr/local/instantclient/libocci.so.12.1 /usr/local/instantclient/libocci.so
-
-RUN docker-php-ext-configure oci8 --with-oci8=instantclient,/usr/local/instantclient \
+    && docker-php-ext-configure oci8 --with-oci8=instantclient,/usr/local/instantclient \
     && docker-php-ext-install oci8 \
     && rm -rf /var/lib/apt/lists/*
-
-#RUN rm -rf /var/lib/apt/lists/*
